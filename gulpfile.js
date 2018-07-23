@@ -4,7 +4,6 @@ let fs = require("fs"),
     gulp = require("gulp"),
     sass = require("gulp-sass"),
     postcss = require("gulp-postcss"),
-    // autoprefixer = require("autoprefixer"),
     orderValues = require("postcss-ordered-values"),
     connect = require("gulp-connect"),
     sourcemap = require("gulp-sourcemaps"),
@@ -16,7 +15,6 @@ let fs = require("fs"),
     cssnext = require("postcss-cssnext"),
     ssync = require("gulp-scp"),
     babel  = require('gulp-babel'),
-    //customProperties = require('postcss-custom-properties'),
     placehold = require("postcss-placehold"),
     browserSync = require('browser-sync').create(),
     borwsersync_reload = browserSync.reload,
@@ -29,8 +27,6 @@ let fs = require("fs"),
 
 let plugins = [cssnext({ features:{ customProperties:{ preserve:true }, grid:true   } , browsers: ['last 5 version']  }),orderValues(),mqpacker(),merge()];
 
-//,merge_long() , customselector(), placehold()
-
 
 gulp.task('connect',() => {
 
@@ -40,7 +36,7 @@ gulp.task('connect',() => {
     host:'localhost',
     port:4000,
     livereload:true,
-    root:"www/"
+    root:"src/"
 
   });
 
@@ -49,12 +45,12 @@ gulp.task('connect',() => {
 
 gulp.task('sass',() => {
 
-  return gulp.src("www/sass/**/*.scss")
+  return gulp.src("src/sass/**/*.scss")
                .pipe(sourcemap.init())
                .pipe(sass({}).on('error',sass.logError)) //sourceMaps: true
                .pipe(postcss(plugins,{}))
                .pipe(sourcemap.write('.'))
-               .pipe(gulp.dest("www/css/"));
+               .pipe(gulp.dest("src/css/"));
 });
 
 gulp.task('reload',() => {
@@ -69,7 +65,7 @@ gulp.task('production',() => {
 
 
   let files_sync   =  gulp.src("")
-                          .pipe(sync('www/','dist/',{ printSummary:true , ignore:["sass","dev"] }))
+                          .pipe(sync('src/','dist/',{ printSummary:true , ignore:["sass","dev"] }))
                           .on('error',() => {
                                 console.log("Something went wrong with files sync!");
                           });
@@ -86,7 +82,7 @@ gulp.task('production',() => {
 
 gulp.task('image-minify',() => {
 
-  return imagesminify =  gulp.src("www/images/*")
+  return imagesminify =  gulp.src("src/images/*")
                           .pipe(imagemin({ progressive: true, optimizationLevel:5, removeViewBox: true }))
                           .pipe(gulp.dest("dist/images/"));
 });
@@ -97,7 +93,7 @@ gulp.task('browser-sync', function() {
       server: {
 
           host:'192.168.0.105',
-          baseDir: "www/",
+          baseDir: "src/",
           injectChanges:true
 
 
@@ -115,23 +111,23 @@ gulp.task('borwsersync_reload',()=> {
 
 gulp.task('transpile-js',function(){
 
-  return gulp.src('www/js/script.js')
+  return gulp.src('src/js/script.js')
              .pipe(sourcemap.init())
              .pipe(babel({
                presets: ["env","es2015"]
              }))
              .pipe(sourcemap.write('.'))
-             .pipe(gulp.dest('www/js/transpiled'));
+             .pipe(gulp.dest('src/js/transpiled'));
 
 });
 
 gulp.task('watch',() => {
 
     console.log("waiting for changes");
-    gulp.watch('www/sass/**/*.scss',['sass']);
-    gulp.watch('www/css/*.css',['reload','borwsersync_reload']); //'reload'
-    gulp.watch('www/**/*.html',['reload','borwsersync_reload']); //'reload'
-    gulp.watch('www/js/**/*.js',['transpile-js','reload','borwsersync_reload']); //'reload'
+    gulp.watch('src/sass/**/*.scss',['sass']);
+    gulp.watch('src/css/*.css',['reload','borwsersync_reload']); //'reload'
+    gulp.watch('src/**/*.html',['reload','borwsersync_reload']); //'reload'
+    gulp.watch('src/js/**/*.js',['transpile-js','reload','borwsersync_reload']); //'reload'
 
 });
 
